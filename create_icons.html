@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>アイコン作成ツール</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .icon-container {
+            display: inline-block;
+            margin: 20px;
+            text-align: center;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            background: white;
+            border-radius: 4px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .instructions {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="instructions">
+        <h2>🛡️ Chrome拡張機能のアイコン作成ツール</h2>
+        <p>このツールを使用して、Chrome拡張機能に必要なアイコンファイルを作成できます。</p>
+        <p>「アイコンを作成」ボタンをクリックして、PNG形式でダウンロードしてください。</p>
+    </div>
+
+    <div class="icon-container">
+        <h3>16x16px</h3>
+        <canvas id="icon16" width="16" height="16"></canvas>
+        <br>
+        <button onclick="createIcon('icon16', 16)">16x16アイコンを作成</button>
+        <button onclick="downloadIcon('icon16', 'icon16.png')">ダウンロード</button>
+    </div>
+
+    <div class="icon-container">
+        <h3>48x48px</h3>
+        <canvas id="icon48" width="48" height="48"></canvas>
+        <br>
+        <button onclick="createIcon('icon48', 48)">48x48アイコンを作成</button>
+        <button onclick="downloadIcon('icon48', 'icon48.png')">ダウンロード</button>
+    </div>
+
+    <div class="icon-container">
+        <h3>128x128px</h3>
+        <canvas id="icon128" width="128" height="128"></canvas>
+        <br>
+        <button onclick="createIcon('icon128', 128)">128x128アイコンを作成</button>
+        <button onclick="downloadIcon('icon128', 'icon128.png')">ダウンロード</button>
+    </div>
+
+    <script>
+        function createIcon(canvasId, size) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            
+            // 背景をクリア
+            ctx.clearRect(0, 0, size, size);
+            
+            // 背景色
+            ctx.fillStyle = '#10a37f';
+            ctx.fillRect(0, 0, size, size);
+            
+            // 盾の形を描画
+            ctx.fillStyle = '#ffffff';
+            const centerX = size / 2;
+            const centerY = size / 2;
+            const shieldWidth = size * 0.6;
+            const shieldHeight = size * 0.7;
+            
+            ctx.beginPath();
+            ctx.moveTo(centerX - shieldWidth/2, centerY - shieldHeight/2);
+            ctx.lineTo(centerX + shieldWidth/2, centerY - shieldHeight/2);
+            ctx.lineTo(centerX + shieldWidth/2, centerY + shieldHeight/4);
+            ctx.lineTo(centerX, centerY + shieldHeight/2);
+            ctx.lineTo(centerX - shieldWidth/2, centerY + shieldHeight/4);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 中央に警告マーク
+            ctx.fillStyle = '#d73502';
+            ctx.font = `${size * 0.4}px Arial Black`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('!', centerX, centerY);
+            
+            console.log(`${size}x${size}のアイコンを作成しました`);
+        }
+        
+        function downloadIcon(canvasId, filename) {
+            const canvas = document.getElementById(canvasId);
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            console.log(`${filename}をダウンロードしました`);
+        }
+        
+        // ページ読み込み時に全アイコンを作成
+        window.onload = function() {
+            createIcon('icon16', 16);
+            createIcon('icon48', 48);
+            createIcon('icon128', 128);
+        };
+    </script>
+</body>
+</html> 

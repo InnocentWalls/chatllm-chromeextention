@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      width: 320px;
+      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      margin: 0;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .header h1 {
+      font-size: 18px;
+      margin: 0 0 5px 0;
+      color: #333;
+    }
+    
+    .header p {
+      margin: 0;
+      color: #666;
+      font-size: 12px;
+    }
+    
+    .status {
+      background: #f5f5f5;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .status-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    
+    .status-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .status-label {
+      font-weight: 500;
+      color: #333;
+    }
+    
+    .status-value {
+      color: #666;
+      font-size: 12px;
+    }
+    
+    .status-enabled {
+      color: #10a37f;
+      font-weight: 500;
+    }
+    
+    .status-disabled {
+      color: #d73502;
+      font-weight: 500;
+    }
+    
+    .controls {
+      margin-bottom: 20px;
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-bottom: 10px;
+      transition: all 0.2s ease;
+    }
+    
+    .btn:last-child {
+      margin-bottom: 0;
+    }
+    
+    .btn-primary {
+      background-color: #10a37f;
+      color: white;
+    }
+    
+    .btn-secondary {
+      background-color: #f0f0f0;
+      color: #333;
+      border: 1px solid #ccc;
+    }
+    
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .info {
+      font-size: 12px;
+      color: #666;
+      text-align: center;
+      line-height: 1.4;
+    }
+    
+    .detection-patterns {
+      margin-top: 15px;
+      font-size: 11px;
+    }
+    
+    .detection-patterns h3 {
+      margin: 0 0 8px 0;
+      font-size: 12px;
+      color: #333;
+    }
+    
+    .pattern-list {
+      background: #f9f9f9;
+      border-radius: 4px;
+      padding: 8px;
+      margin: 0;
+    }
+    
+    .pattern-list li {
+      margin: 3px 0;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🛡️ 個人情報検知器</h1>
+    <p>ChatGPTでの個人情報入力を監視</p>
+  </div>
+  
+  <div class="status">
+    <div class="status-item">
+      <span class="status-label">監視状態:</span>
+      <span class="status-value" id="monitoring-status">確認中...</span>
+    </div>
+    <div class="status-item">
+      <span class="status-label">警告表示:</span>
+      <span class="status-value" id="warning-status">確認中...</span>
+    </div>
+    <div class="status-item" id="disable-time-item" style="display: none;">
+      <span class="status-label">無効期限:</span>
+      <span class="status-value" id="disable-time">-</span>
+    </div>
+  </div>
+  
+  <div class="controls">
+    <button class="btn btn-secondary" id="enable-warning-btn" style="display: none;">
+      警告表示を有効にする
+    </button>
+    <button class="btn btn-secondary" id="disable-warning-btn">
+      8時間警告を無効にする
+    </button>
+  </div>
+  
+  <div class="info">
+    このChatGPT拡張機能は以下のような個人情報を検知します
+    
+    <div class="detection-patterns">
+      <h3>検知パターン:</h3>
+      <ul class="pattern-list">
+        <li>メールアドレス（@example.com除く）</li>
+        <li>電話番号（0X-XXXX-XXXX形式）</li>
+        <li>クレジットカード番号</li>
+        <li>パスポート番号（XX1234567形式）</li>
+        <li>マイナンバー（12桁）</li>
+        <li>AWSアクセスキー（AKIA...）</li>
+      </ul>
+    </div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html> 
