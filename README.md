@@ -1,10 +1,10 @@
-# ChatGPT個人情報検知器
+# AI個人情報検知器
 
-ChatGPTでプロンプト入力時に個人情報や機密情報を検知し、警告を表示するChrome拡張機能です。
+ChatGPT、Claude、Geminiでプロンプト入力時に個人情報や機密情報を検知し、警告を表示するChrome拡張機能です。
 
 ## 機能
 
-- **リアルタイム監視**: ChatGPTのプロンプト入力をリアルタイムで監視
+- **リアルタイム監視**: 各AIサービスのプロンプト入力をリアルタイムで監視
 - **個人情報検知**: 以下のような個人情報パターンを自動検知
   - メールアドレス（@example.com除く）
   - 電話番号（0X-XXXX-XXXX形式）
@@ -33,7 +33,10 @@ ChatGPTでプロンプト入力時に個人情報や機密情報を検知し、�
 
 ## 使用方法
 
-1. ChatGPT (https://chat.openai.com または https://chatgpt.com) にアクセス
+1. 対象サイトにアクセス：
+   - ChatGPT: https://chat.openai.com または https://chatgpt.com
+   - Claude: https://claude.ai
+   - Gemini: https://gemini.google.com
 2. プロンプトを入力して送信ボタンを押す
 3. 個人情報が検知された場合、警告ダイアログが表示される
 4. ダイアログで以下の選択が可能：
@@ -85,6 +88,8 @@ const personalInfoPatterns = {
   "matches": [
     "https://chat.openai.com/*",
     "https://chatgpt.com/*",
+    "https://claude.ai/*",
+    "https://gemini.google.com/*",
     "https://your-target-site.com/*"
   ]
 }

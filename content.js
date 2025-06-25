@@ -281,22 +281,18 @@ function submitOriginalForm() {
 }
 
 // ChatGPTのテキスト入力を監視
-function monitorChatGPTInput() {
-  console.log('ChatGPT個人情報検知器: 監視を開始します');
+function monitorAIServiceInput() {
+  const currentService = detectAIService();
+  const config = serviceConfigs[currentService];
   
-  // ChatGPTのテキストエリアを取得
+  console.log(`${config?.name || 'AI サービス'}個人情報検知器: 監視を開始します`);
+  
+  // テキストエリアを取得
   const getTextArea = () => {
-    const selectors = [
-      'textarea[placeholder*="メッセージ"]',
-      'textarea[placeholder*="Message"]',
-      'textarea[placeholder*="Send a message"]',
-      'textarea[data-id]',
-      '#prompt-textarea',
-      'div[contenteditable="true"]',
+    const selectors = config?.textAreaSelectors || [
       'textarea',
-      '[contenteditable="true"]',
-      'div[role="textbox"]',
-      '[data-testid="textbox"]'
+      'div[contenteditable="true"]',
+      '[role="textbox"]'
     ];
     
     for (const selector of selectors) {
@@ -316,13 +312,11 @@ function monitorChatGPTInput() {
 
   // 送信ボタンを取得
   const getSendButton = () => {
-    const selectors = [
-      '[data-testid="send-button"]',
-      '[data-testid="fruitjuice-send-button"]',
+    const selectors = config?.sendButtonSelectors || [
       'button[type="submit"]',
-      'button[aria-label*="送信"]',
       'button[aria-label*="Send"]',
-      'button[title*="Send message"]'
+      'button[aria-label*="送信"]',
+      '[data-testid="send-button"]'
     ];
     
     // まず特定のセレクターを試す
@@ -541,23 +535,163 @@ function monitorChatGPTInput() {
   setupInputMonitoring();
 }
 
+// バナーを閉じたかどうかのフラグ
+let isBannerClosed = false;
+
+// 現在のサービスを検出
+function detectAIService() {
+  const hostname = window.location.hostname;
+  if (hostname.includes('chat.openai.com') || hostname.includes('chatgpt.com')) {
+    return 'chatgpt';
+  } else if (hostname.includes('claude.ai')) {
+    return 'claude';
+  } else if (hostname.includes('gemini.google.com')) {
+    return 'gemini';
+  }
+  return 'unknown';
+}
+
+// サービス固有の設定
+const serviceConfigs = {
+  chatgpt: {
+    name: 'ChatGPT',
+    textAreaSelectors: [
+      '#prompt-textarea',
+      'textarea[placeholder*="メッセージ"]',
+      'textarea[placeholder*="Message"]',
+      'textarea[placeholder*="Send a message"]',
+      'div[contenteditable="true"]',
+      'textarea',
+      '[contenteditable="true"]',
+      'div[role="textbox"]',
+      '[data-testid="textbox"]'
+    ],
+    sendButtonSelectors: [
+      '[data-testid="send-button"]',
+      '[data-testid="fruitjuice-send-button"]',
+      'button[type="submit"]',
+      'button[aria-label*="送信"]',
+      'button[aria-label*="Send"]',
+      'button[title*="Send message"]'
+    ]
+  },
+  claude: {
+    name: 'Claude',
+    textAreaSelectors: [
+      'div[contenteditable="true"]',
+      'textarea',
+      '[role="textbox"]',
+      '[data-testid="chat-input"]',
+      '.ProseMirror'
+    ],
+    sendButtonSelectors: [
+      'button[aria-label*="Send"]',
+      'button[aria-label*="送信"]',
+      '[data-testid="send-button"]',
+      'button[type="submit"]'
+    ]
+  },
+  gemini: {
+    name: 'Gemini',
+    textAreaSelectors: [
+      'div[contenteditable="true"]',
+      'textarea',
+      '[role="textbox"]',
+      '.ql-editor',
+      '[data-testid="input-area"]'
+    ],
+    sendButtonSelectors: [
+      'button[aria-label*="Send"]',
+      'button[aria-label*="送信"]',
+      '[data-testid="send-button"]',
+      'button[type="submit"]'
+    ]
+  }
+};
+
+// 注意喚起バナーを表示
+function createWarningBanner() {
+  // ユーザーがバナーを閉じている場合は表示しない
+  if (isBannerClosed) {
+    console.log('ユーザーがバナーを閉じているため、表示しません');
+    return;
+  }
+
+  // 既存のバナーがあれば削除
+  const existingBanner = document.getElementById('ai-usage-warning-banner');
+  if (existingBanner) {
+    existingBanner.remove();
+  }
+
+  // 現在のサービスを検出
+  const currentService = detectAIService();
+  const serviceName = serviceConfigs[currentService]?.name || 'AI サービス';
+
+  const banner = document.createElement('div');
+  banner.id = 'ai-usage-warning-banner';
+  banner.className = 'ai-warning-banner';
+  
+  banner.innerHTML = `
+    <div class="warning-content">
+      <div class="warning-icon">❗</div>
+      <div class="warning-text">
+        <strong>生成AI利活用ガイドラインに基づき（${serviceName}使用時）</strong><br>
+        ・漏洩により他社等の社外から責任を問われる情報（個人情報、お客様情報など）<br>
+        ・漏洩により当社が甚大な損害を被りうる情報（クラウドのアクセスキーなど）<br>
+        を入力する前には、必ずCorp-ITと法務チーム、および所属上長に相談してください
+      </div>
+      <button class="warning-close">×</button>
+    </div>
+  `;
+
+  // ページの最上部に挿入
+  document.body.insertBefore(banner, document.body.firstChild);
+  
+  // バツボタンのイベントリスナーを追加
+  const closeButton = banner.querySelector('.warning-close');
+  closeButton.addEventListener('click', () => {
+    console.log('警告バナーを閉じます');
+    isBannerClosed = true; // フラグを設定
+    banner.style.display = 'none';
+    // さらに確実に削除
+    setTimeout(() => {
+      if (banner.parentNode) {
+        banner.parentNode.removeChild(banner);
+      }
+    }, 100);
+  });
+  
+  console.log('AI利活用ガイドライン警告バナーを表示しました');
+}
+
 // DOM読み込み完了後に監視開始
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', monitorChatGPTInput);
+  document.addEventListener('DOMContentLoaded', () => {
+    createWarningBanner();
+    monitorAIServiceInput();
+  });
 } else {
-  monitorChatGPTInput();
+  createWarningBanner();
+  monitorAIServiceInput();
 }
 
 // ページの動的変更に対応（ChatGPTはSPAなので）
 const observer = new MutationObserver((mutations) => {
   mutations.forEach((mutation) => {
     if (mutation.addedNodes.length > 0) {
+      // 警告バナーが消されていないかチェック（ユーザーが閉じていない場合のみ）
+      const warningBanner = document.getElementById('ai-usage-warning-banner');
+      if (!warningBanner && !isBannerClosed) {
+        console.log('警告バナーが見つからないため、再表示します');
+        setTimeout(createWarningBanner, 100);
+      }
+      
       // 送信ボタンが動的に追加される場合に対応
       const sendButton = document.querySelector('[data-testid="send-button"]');
       if (sendButton && !sendButton.dataset.monitored) {
         console.log('動的に送信ボタンが追加されました');
         sendButton.dataset.monitored = 'true';
-        setTimeout(monitorChatGPTInput, 500);
+        setTimeout(monitorAIServiceInput, 500);
       }
       
       // 新しいテキストエリアが追加された場合も対応
@@ -568,7 +702,7 @@ const observer = new MutationObserver((mutations) => {
       if (textArea && !textArea.dataset.monitored) {
         console.log('動的にテキストエリアが追加されました');
         textArea.dataset.monitored = 'true';
-        setTimeout(monitorChatGPTInput, 500);
+        setTimeout(monitorAIServiceInput, 500);
       }
     }
   });

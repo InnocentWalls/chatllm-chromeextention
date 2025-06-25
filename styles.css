@@ -1,3 +1,90 @@
+/* AI利活用ガイドライン警告バナーのスタイル */
+.ai-warning-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+  border-bottom: 3px solid #f39c12;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10001;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  animation: bannerSlideDown 0.5s ease-out;
+}
+
+@keyframes bannerSlideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.warning-content {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 12px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  text-align: center;
+}
+
+.warning-icon {
+  font-size: 24px;
+  margin-right: 12px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.warning-text {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #856404;
+  text-align: center;
+  margin: 0 auto;
+}
+
+.warning-text strong {
+  color: #d63384;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.warning-close {
+  position: absolute;
+  top: 8px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #856404;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.warning-close:hover {
+  background-color: rgba(133, 100, 4, 0.1);
+  color: #d63384;
+}
+
+/* メインコンテンツに上部マージンを追加 */
+body:has(.ai-warning-banner) {
+  padding-top: 80px !important;
+}
+
+/* ChatGPTのメインコンテンツ領域にマージンを追加 */
+.ai-warning-banner ~ * {
+  margin-top: 0 !important;
+}
+
 /* 個人情報警告ダイアログのスタイル */
 .personal-info-dialog {
   position: fixed;
